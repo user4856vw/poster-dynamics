@@ -15,7 +15,7 @@
   const dot = (a,b) => a.reduce((s,x,i)=>s+x*b[i],0);
   // An orthonormal camera basis: displayed cubes are orthographic projections
   // of genuine squares in 3D, not arbitrary parallelograms.
-  const right = [.8,.6,0], up = [-.384,.512,.784],
+  const right = [.8,.6,0], up = [-.36,.48,.8],
         eye = [right[1]*up[2]-right[2]*up[1],
                right[2]*up[0]-right[0]*up[2],
                right[0]*up[1]-right[1]*up[0]];

@@ -3,7 +3,12 @@
   const $ = id => document.getElementById(id);
   const canvases = {A:$('cubeA'),B:$('cubeB')};
   const values = {a1:90,a2:90,b1:90,b2:90};
-  const stage = {A:2,B:2};
+  // Progress is measured in two phases: [0,1] first rotation, [1,2] second.
+  // The target angles are independent of this animation state.
+  const stage = {A:0,B:0};
+  const playing = {A:false,B:false};
+  const midpointHandled = {A:false,B:false};
+  let frameId = null, lastTime = null;
   const colors = {T:'#f6ca48',D:'#f89b48',F:'#5a9feb',B:'#9674d3',R:'#e76060',L:'#69bd80'};
   const faces = {T:[0,0,1],D:[0,0,-1],F:[0,-1,0],B:[0,1,0],R:[1,0,0],L:[-1,0,0]};
   const identity = [[1,0,0],[0,1,0],[0,0,1]];
@@ -20,11 +25,15 @@
                right[2]*up[0]-right[0]*up[2],
                right[0]*up[1]-right[1]*up[0]];
   function rotation(seq,atStage=stage[seq]){
-    if(atStage===0)return identity;
-    const first=seq==='A'?Rx(rad(values.a1)):Ry(rad(values.b1));
-    if(atStage===1)return first;
-    const second=seq==='A'?Ry(rad(values.a2)):Rx(rad(values.b2));
-    return mm(second,first); // fixed world axes: second left-multiplies first.
+    if(atStage <= 0)return identity;
+    const firstTarget=seq==='A'?values.a1:values.b1;
+    const secondTarget=seq==='A'?values.a2:values.b2;
+    const first=seq==='A'?Rx(rad(firstTarget*Math.min(atStage,1))):
+                           Ry(rad(firstTarget*Math.min(atStage,1)));
+    if(atStage<=1)return first;
+    const second=seq==='A'?Ry(rad(secondTarget*Math.min(atStage-1,1))):
+                            Rx(rad(secondTarget*Math.min(atStage-1,1)));
+    return mm(second,first); // active rotations about fixed world axes.
   }
   function alignedLabels(A){
     const worldDirections=[[0,0,1],[0,-1,0],[1,0,0]];
@@ -84,7 +93,18 @@
     }
     g.fillStyle='#51697b';g.textAlign='left';g.font='12px system-ui';g.fillText('Fixed axes',105,289);
     const top=mv(A,faces.T),labels=alignedLabels(A);
-    const heading=stage[seq]===0?'Start':stage[seq]===1?'After first turn':'After both turns';
+    const p=stage[seq];
+    const firstAngle=seq==='A'?values.a1:values.b1;
+    const secondAngle=seq==='A'?values.a2:values.b2;
+    const eps=1e-7;
+    const heading=p<eps?'Start':
+      p<1-eps?'First turn '+(firstAngle*p).toFixed(1)+'° / '+firstAngle+'°':
+      p<1+eps?'After first turn':
+      p<2-eps?'Second turn '+(secondAngle*(p-1)).toFixed(1)+'° / '+secondAngle+'°':'After both turns';
+    $('progress'+seq).value=p;
+    $('progressText'+seq).textContent=p<eps?'Start':p<1-eps?'Turn 1':p<1+eps?'Between turns':p<2-eps?'Turn 2':'Finished';
+    $('pause'+seq).disabled=!playing[seq];
+    $('play'+seq).textContent=playing[seq]?'▶ Playing…':'▶ Play / Resume';
     $('state'+seq).textContent=heading+' · '+(labels?
       'Top / Front / Right = '+labels :
       'original T face normal = ('+top.map(x=>Math.abs(x)<1e-9?'0':x.toFixed(3)).join(', ')+')');
@@ -110,7 +130,7 @@
       values[key]=v;
       slider.value=v;
       if(document.activeElement!==numeric)numeric.value=v;
-      stage[seq]=2;render();
+      playing[seq]=false;stage[seq]=0;midpointHandled[seq]=false;render();
     }
     slider.addEventListener('input',()=>{
       numeric.value=slider.value;setAngle(Number(slider.value));
@@ -123,14 +143,19 @@
   }
   document.querySelectorAll('[data-seq][data-stage]').forEach(button=>{
     button.addEventListener('click',()=>{
-      stage[button.dataset.seq]=Number(button.dataset.stage);render();
+      const seq=button.dataset.seq;
+      playing[seq]=false;stage[seq]=Number(button.dataset.stage);
+      midpointHandled[seq]=stage[seq]>=1;render();
     });
   });
   function preset(angle){
     for(const key of Object.keys(values)){
       values[key]=angle;$(key).value=angle;$(key+'n').value=angle;
     }
-    stage.A=stage.B=2;render();
+    playing.A=playing.B=false;
+    stage.A=stage.B=0;
+    midpointHandled.A=midpointHandled.B=false;
+    render();
   }
   $('both90').addEventListener('click',()=>preset(90));
   $('clear').addEventListener('click',()=>preset(0));
@@ -143,7 +168,110 @@
      alignedLabels(rotation('B',2))!=='B / L / T')
     console.error('Cube orientation reference check failed');
   Object.assign(values,saved);
-  window.__posterRotation={Rx,Ry,mv,mm,rotation,values,stage};
+  // Animation progresses by actual angle traversed (degrees/second), not
+  // by an arbitrary fixed duration per phase. A zero-angle phase is skipped.
+  const speed=$('speed');
+  const pauseFirst=$('pauseFirst');
+  function updateSpeed(){ $('speedValue').textContent=Number(speed.value)+'°/s'; }
+  speed.addEventListener('input',updateSpeed);
+  updateSpeed();
+
+  function advance(seq,deltaDegrees){
+    let p=stage[seq];
+    const a1=Math.abs(seq==='A'?values.a1:values.b1);
+    const a2=Math.abs(seq==='A'?values.a2:values.b2);
+    for(let safeguard=0;safeguard<4 && playing[seq];safeguard++){
+      if(p<1-1e-9){
+        const remain=a1*(1-p);
+        if(remain>deltaDegrees && a1>1e-9){
+          p+=deltaDegrees/a1;
+          break;
+        }
+        deltaDegrees=Math.max(0,deltaDegrees-remain);
+        p=1;
+        if(pauseFirst.checked && !midpointHandled[seq]){
+          midpointHandled[seq]=true;
+          playing[seq]=false;
+          break;
+        }
+      } else if(p<2-1e-9){
+        const remain=a2*(2-p);
+        if(remain>deltaDegrees && a2>1e-9){
+          p+=deltaDegrees/a2;
+          break;
+        }
+        deltaDegrees=Math.max(0,deltaDegrees-remain);
+        p=2;
+        playing[seq]=false;
+        break;
+      } else {
+        playing[seq]=false;
+        p=2;
+        break;
+      }
+      if(deltaDegrees<=0 && a2>0)break;
+    }
+    stage[seq]=Math.max(0,Math.min(2,p));
+  }
+  function frame(time){
+    frameId=null;
+    if(lastTime===null)lastTime=time;
+    // Clamping avoids sudden jumps after tab switches or system sleep.
+    const elapsed=Math.min(.06,Math.max(0,(time-lastTime)/1000));
+    lastTime=time;
+    const delta=Number(speed.value)*elapsed;
+    for(const seq of ['A','B'])if(playing[seq])advance(seq,delta);
+    render();
+    if(playing.A||playing.B)frameId=requestAnimationFrame(frame);
+    else lastTime=null;
+  }
+  function ensureFrame(){
+    if(frameId===null){
+      lastTime=null;
+      frameId=requestAnimationFrame(frame);
+    }
+  }
+  function start(seq){
+    if(stage[seq]>=2-1e-9){
+      stage[seq]=0;midpointHandled[seq]=false;
+    }
+    // Explicitly starting at the midpoint resumes the second turn.
+    if(stage[seq]>=1-1e-9)midpointHandled[seq]=true;
+    playing[seq]=true;
+    ensureFrame();render();
+  }
+  function pause(seq){playing[seq]=false;render();}
+  function reset(seq){
+    playing[seq]=false;stage[seq]=0;midpointHandled[seq]=false;
+    render();
+  }
+  for(const seq of ['A','B']){
+    $('play'+seq).addEventListener('click',()=>start(seq));
+    $('pause'+seq).addEventListener('click',()=>pause(seq));
+    $('reset'+seq).addEventListener('click',()=>reset(seq));
+    $('progress'+seq).addEventListener('input',event=>{
+      playing[seq]=false;
+      stage[seq]=Number(event.target.value);
+      midpointHandled[seq]=stage[seq]>=1;
+      render();
+    });
+  }
+  $('playBoth').addEventListener('click',()=>{
+    start('A');start('B');
+  });
+  $('pauseBoth').addEventListener('click',()=>{
+    playing.A=playing.B=false;render();
+  });
+  $('resetBoth').addEventListener('click',()=>{
+    playing.A=playing.B=false;stage.A=stage.B=0;
+    midpointHandled.A=midpointHandled.B=false;render();
+  });
+  // Don't continue advancing time invisibly when the page is backgrounded.
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){playing.A=playing.B=false;lastTime=null;render();}
+  });
+
+  window.__posterRotation={Rx,Ry,mv,mm,rotation,values,stage,playing,advance,start,pause,reset};
   window.addEventListener('resize',()=>{drawNet();render()});
   drawNet();render();
 })();

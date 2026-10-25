@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Four physical systems, one oscillator — Poster Dynamics</title><link rel="stylesheet" href="assets/style.css">
+<style>
+.experiment{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.param label{display:block;font-weight:600;font-size:14px}.param input{width:100%;padding:8px;font-size:16px;margin-top:4px;border:1px solid #9eb9c4;border-radius:5px}
+legend{font-weight:700;color:#184c6b}.eq{font-size:clamp(16px,2vw,22px);font-family:Georgia,serif;margin:6px 0}
+#plot{height:360px}#energies{height:155px}
+@media(max-width:760px){.controls,.experiment{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.controls,.experiment{grid-template-columns:1fr}}
+</style></head>
+<body><header><div class="brand">Poster Dynamics · 04 · RLC analogy</div><h1>Four Systems, One Differential Equation</h1><p>Change inertia, damping, stiffness, and forcing; the same evolution works in four physical domains.</p>
+<nav><a href="index.html">Home</a><a href="conics.html">Conics</a><a href="rotations.html">Rotations</a><a href="complex.html">Complex</a><a aria-current="page" href="oscillators.html">Oscillator</a><a href="pde-atlas.html">PDE atlas</a></nav></header>
+<main>
+<section class="panel">
+<div class="control"><label for="domain">Physical system</label><select id="domain" style="font-size:17px;padding:8px"><option value="mechanical">Mass / spring / damper</option><option value="electrical">Series RLC</option><option value="rotational">Torsional oscillator</option><option value="hydraulic">Idealized hydraulic circuit</option></select></div>
+<p class="eq" id="equation"></p><p class="note" id="dictionary"></p>
+<div class="controls">
+<div class="param"><label for="inertia">Inertia coefficient a</label><input id="inertia" type="number" min=".1" max="30" step=".1" value="1"></div>
+<div class="param"><label for="damping">Dissipation b</label><input id="damping" type="number" min="0" max="30" step=".1" value=".6"></div>
+<div class="param"><label for="stiffness">Restoring coefficient c</label><input id="stiffness" type="number" min=".1" max="30" step=".1" value="4"></div>
+<div class="param"><label for="initial">Initial state s(0)</label><input id="initial" type="number" min="-10" max="10" step=".1" value="1"></div>
+<div class="param"><label for="forcing">Drive amplitude A</label><input id="forcing" type="number" min="0" max="20" step=".1" value="0"></div>
+<div class="param"><label for="frequency">Drive frequency Ω (rad/s)</label><input id="frequency" type="number" min="0" max="20" step=".1" value="2"></div>
+</div><p class="note">All inputs are *normalized coefficients*, not interchangeable SI quantities: changing the domain reinterprets each coefficient and state. Initial flow s′(0) = 0. The drive is A sin(Ωt).</p>
+<div class="readout"><strong id="type"></strong> · <span id="natural"></span> · <span id="ratio"></span></div>
+<div class="control"><label for="t">Time</label><input type="range" id="t" min="0" max="20" value="0" step=".01"><output id="tv">0.00 s</output></div>
+<div class="control"><label for="speed">Playback speed</label><input type="range" id="speed" min=".25" max="3" value="1" step=".25"><output id="sv">1×</output></div>
+<div class="buttons"><button id="play">▶ Play</button><button id="pause">Ⅱ Pause</button><button id="reset">↺ Back to start</button><button id="reference">Restore reference parameters</button></div>
+<div class="canvaswrap"><canvas id="plot"></canvas></div>
+<p class="note">Blue: state s(t). Orange: rate s′(t). The vertical cursor follows time; the curves are computed from the same second-order ODE using RK4 integration.</p>
+<div class="experiment">
+<div><h2>Where the energy is</h2><div class="canvaswrap"><canvas id="energies"></canvas></div></div>
+<div class="readout"><p id="liveState"></p><p id="liveEnergy"></p><p>Inertia stores ½ a(s′)²; the restoring element stores ½ c s². Damping dissipates power b(s′)². With external driving, total stored energy need not decrease.</p></div></div>
+</section>
+<section class="panel"><h2>Same solution, four readings</h2>
+<table><thead><tr><th>Meaning</th><th>Mass/spring</th><th>Rotation</th><th>Electrical RLC</th><th>Hydraulic</th></tr></thead><tbody>
+<tr><td>State s</td><td>x</td><td>θ</td><td>q</td><td>V (fluid volume)</td></tr>
+<tr><td>Rate s′</td><td>velocity</td><td>angular speed</td><td>current</td><td>volume flow</td></tr>
+<tr><td>Inertia a</td><td>mass m</td><td>moment J</td><td>inductance L</td><td>inertance Lₕ</td></tr>
+<tr><td>Loss b</td><td>damping b</td><td>torsional drag bᵣ</td><td>resistance R</td><td>resistance Rₕ</td></tr>
+<tr><td>Restoring c</td><td>spring k</td><td>torsion κ</td><td>1/C</td><td>1/Cₕ</td></tr>
+</tbody></table>
+</section></main><footer>Physical analogies require a specified choice of effort-flow convention; this demo uses force–voltage correspondence.</footer>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const defs={
+mechanical:["m x″ + b x′ + kx = F(t)","s=x (displacement); effort=force; flow=velocity","m","b","k"],
+electrical:["L q″ + R q′ + q/C = V(t)","s=q (charge); effort=voltage; flow=current","L","R","1/C"],
+rotational:["J θ″ + bᵣ θ′ + κθ = τ(t)","s=θ (angle); effort=torque; flow=angular velocity","J","bᵣ","κ"],
+hydraulic:["Lₕ V″ + Rₕ V′ + V/Cₕ = Δp(t)","s=V (volume displacement); effort=pressure difference; flow=volume/s","Lₕ","Rₕ","1/Cₕ"]
+};
+let samples=[],time=0,playing=false,last=0,frame=0;
+const dt=.0125,final=20;
+const fields=["inertia","damping","stiffness","initial","forcing","frequency"];
+function number(id){const v=Number($(id).value);return Number.isFinite(v)?v:NaN;}
+function valAndSlope(s,v,t,a,b,c,A,om){return [v,(A*Math.sin(om*t)-b*v-c*s)/a];}
+function compute(){
+ const [a,b,c,s0,A,om]=fields.map(number);
+ if(![a,b,c,s0,A,om].every(Number.isFinite)||a<=0||b<0||c<=0){$('type').textContent='Enter a > 0, b ≥ 0, c > 0';return false}
+ let s=s0,v=0;tCache=[a,b,c,A,om];samples=[{t:0,s,v}];
+ const deriv=(S,V,T)=>valAndSlope(S,V,T,a,b,c,A,om);
+ for(let i=1;i<=Math.round(final/dt);i++){
+  const t=(i-1)*dt,k1=deriv(s,v,t),k2=deriv(s+dt*k1[0]/2,v+dt*k1[1]/2,t+dt/2),
+   k3=deriv(s+dt*k2[0]/2,v+dt*k2[1]/2,t+dt/2),k4=deriv(s+dt*k3[0],v+dt*k3[1],t+dt);
+  s+=dt*(k1[0]+2*k2[0]+2*k3[0]+k4[0])/6;
+  v+=dt*(k1[1]+2*k2[1]+2*k3[1]+k4[1])/6;
+  samples.push({t:i*dt,s,v});
+ }
+ const ratio=b/(2*Math.sqrt(a*c));
+ $('type').textContent=ratio<1-1e-8?'Underdamped':ratio>1+1e-8?'Overdamped':'Critically damped';
+ $('natural').textContent='Natural frequency ω₀ = '+Math.sqrt(c/a).toFixed(3)+' rad/s';
+ $('ratio').textContent='Damping ratio ζ = '+ratio.toFixed(3);
+ return true;
+}
+let tCache=[1,.6,4,0,0];
+function sample(){const idx=Math.max(0,Math.min(samples.length-1,Math.round(time/dt)));return samples[idx];}
+function canvas(c,height){
+ const w=Math.max(300,c.clientWidth),d=window.devicePixelRatio||1;
+ c.width=w*d;c.height=height*d;c.style.height=height+'px';
+ const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);
+ g.fillStyle='#fff';g.fillRect(0,0,w,height);return[g,w,height];
+}
+function plot(){
+ if(!samples.length)return;
+ const [g,w,h]=canvas($('plot'),355),pad=36,x=t=>pad+(w-2*pad)*t/final;
+ let m=Math.max(.01,...samples.map(p=>Math.max(Math.abs(p.s),Math.abs(p.v))));
+ // Avoid a single huge forcing transient destroying legibility.
+ let range=Math.max(.5,m)*1.12,y=z=>h/2-z*(h-2*pad)/(2*range);
+ g.strokeStyle='#dce8ed';g.lineWidth=1;
+ for(let i=0;i<=4;i++){const yy=pad+(h-2*pad)*i/4;g.beginPath();g.moveTo(pad,yy);g.lineTo(w-pad,yy);g.stroke()}
+ g.strokeStyle='#859ead';g.beginPath();g.moveTo(pad,h/2);g.lineTo(w-pad,h/2);g.stroke();
+ for(const [name,color]of[['s','#2073a7'],['v','#c36a2b']]){
+  g.beginPath();samples.forEach((p,i)=>{const xx=x(p.t),yy=y(p[name]);if(!i)g.moveTo(xx,yy);else g.lineTo(xx,yy)});
+  g.strokeStyle=color;g.lineWidth=2;g.stroke();
+ }
+ g.strokeStyle='#253f54';g.setLineDash([5,3]);g.beginPath();g.moveTo(x(time),pad);g.lineTo(x(time),h-pad);g.stroke();g.setLineDash([]);
+ g.fillStyle='#3f5a6d';g.font='13px system-ui';g.fillText('0 s',pad,h-11);g.fillText('20 s',w-pad-28,h-11);
+ const q=sample(),[xc,yc]=[x(time),y(q.s)];
+ g.fillStyle='#2073a7';g.beginPath();g.arc(xc,yc,5,0,7);g.fill();
+}
+function energy(){
+ if(!samples.length)return;
+ const q=sample(),[a,b,c]=tCache,K=.5*a*q.v*q.v,U=.5*c*q.s*q.s;
+ const total=K+U,den=Math.max(.001,total);
+ const [g,w,h]=canvas($('energies'),155);
+ [['inertia',K,'#2073a7'],['restoring',U,'#359177']].forEach(([label,value,color],i)=>{
+  const yy=26+i*52;g.fillStyle='#4f6776';g.font='14px system-ui';g.fillText(label,10,yy-4);
+  g.fillStyle='#e9f0f4';g.fillRect(10,yy,Math.max(20,w-25),20);
+  g.fillStyle=color;g.fillRect(10,yy,Math.max(0,w-25)*value/den,20);
+ });
+ $('liveState').textContent='At t = '+time.toFixed(2)+' s: s = '+q.s.toFixed(4)+', s′ = '+q.v.toFixed(4);
+ $('liveEnergy').textContent='Stored energy = '+total.toFixed(4)+' (inertia '+K.toFixed(4)+'; restoring '+U.toFixed(4)+').';
+}
+function render(){ $('t').value=time;$('tv').textContent=time.toFixed(2)+' s'; $('sv').textContent=Number($('speed').value)+'×';plot();energy();}
+function recompute(){if(compute()){time=0;playing=false;render()}}
+fields.forEach(id=>$(id).addEventListener('change',recompute));
+$('domain').addEventListener('change',()=>{const d=defs[$('domain').value];$('equation').textContent=d[0];$('dictionary').textContent=d[1];$('inertia').previousElementSibling.textContent='Inertia coefficient '+d[2];$('damping').previousElementSibling.textContent='Dissipation '+d[3];$('stiffness').previousElementSibling.textContent='Restoring '+d[4];render()});
+$('t').addEventListener('input',()=>{time=Number($('t').value);playing=false;render()});
+$('speed').addEventListener('input',render);
+$('play').onclick=()=>{if(time>=final)time=0;playing=true;last=0;render()};
+$('pause').onclick=()=>{playing=false;render()};
+$('reset').onclick=()=>{playing=false;time=0;render()};
+$('reference').onclick=()=>{const v=[1,.6,4,1,0,2];fields.forEach((id,i)=>$(id).value=v[i]);recompute()};
+function tick(now){if(playing){if(last)time=Math.min(final,time+Math.min(.08,(now-last)/1000)*Number($('speed').value));last=now;if(time>=final)playing=false;render()}else last=0;requestAnimationFrame(tick)}
+window.addEventListener('resize',render);
+$('domain').dispatchEvent(new Event('change'));recompute();requestAnimationFrame(tick);
+})();
+</script></body></html>

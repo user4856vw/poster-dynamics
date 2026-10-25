@@ -1,9 +1,24 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>3D Rotations — Poster Dynamics</title><link rel="stylesheet" href="assets/style.css"></head><body><header><div class="brand">Poster Dynamics · 02</div><h1>3D Rotations: Order Matters</h1><p>Noncommutative, but associative. Both sequences rotate the same labeled cube about fixed world axes.</p><nav><a href="index.html">Home</a><a href="conics.html">Conic sections</a><a aria-current="page" href="rotations.html">3D rotations</a><a href="complex.html">Complex multiplication</a></nav></header><main><div class="panel"><p class="note">Active rotations about <strong>fixed world x and y axes</strong> (right-hand rule). Each sequence has its own first and second angles, independently adjustable from −360° to +360°. The camera and cube face labels remain fixed. You may inspect the start, first turn, or combined rotation separately.</p>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>3D Rotations — Poster Dynamics</title><link rel="stylesheet" href="assets/style.css"></head><body><header><div class="brand">Poster Dynamics · 02</div><h1>3D Rotations: Order Matters</h1><p>Noncommutative, but associative. Both sequences rotate the same labeled cube about fixed world axes.</p><nav><a href="index.html">Home</a><a href="conics.html">Conic sections</a><a aria-current="page" href="rotations.html">3D rotations</a><a href="complex.html">Complex multiplication</a></nav></header><main><div class="panel"><p class="note">Active rotations about <strong>fixed world x and y axes</strong> (right-hand rule). Each sequence has its own first and second angles, independently adjustable from −360° to +360°. The camera and cube face labels remain fixed. Use Play/Pause to watch each turn unfold, or scrub each timeline directly. Back to start preserves the chosen target angles.</p>
+<div class="panel" style="background:#f1f7f6;padding:12px">
+  <div class="control"><label for="speed"><strong>Angular playback speed</strong></label>
+    <input id="speed" type="range" min="15" max="360" step="15" value="90">
+    <output id="speedValue" for="speed">90°/s</output>
+  </div>
+  <div class="control"><label style="display:flex;align-items:center;gap:8px" for="pauseFirst"><input id="pauseFirst" type="checkbox" checked> Pause after first turn (resume with Play)</label></div>
+  <div class="buttons">
+    <button id="playBoth">▶ Play both</button>
+    <button id="pauseBoth">Ⅱ Pause both</button>
+    <button id="resetBoth">↺ Back to start — both</button>
+  </div>
+  <p class="note">Speed is measured in degrees per second; a 180° turn takes twice as long as a 90° turn at the same setting. Playback follows each rotation about its assigned fixed axis, not a shortcut to the final orientation.</p>
+</div>
 <div class="grid">
 <section class="panel" style="background:#f4f8ff">
 <h2>A — first Rₓ, then Rᵧ</h2>
 <div class="control"><label for="a1">First Rₓ</label><input id="a1" type="range" min="-360" max="360" value="90" step="1"><input id="a1n" type="number" min="-360" max="360" step="any" value="90" aria-label="First A angle in degrees" style="width:70px;padding:4px">°</div>
 <div class="control"><label for="a2">Second Rᵧ</label><input id="a2" type="range" min="-360" max="360" value="90" step="1"><input id="a2n" type="number" min="-360" max="360" step="any" value="90" aria-label="Second A angle in degrees" style="width:70px;padding:4px">°</div>
+<div class="buttons"><button id="playA">▶ Play / Resume</button><button id="pauseA">Ⅱ Pause</button><button id="resetA">↺ Back to start</button></div>
+<div class="control"><label for="progressA">Timeline</label><input id="progressA" type="range" min="0" max="2" value="0" step="0.001"><output id="progressTextA">Start</output></div>
 <div class="buttons"><button data-seq="A" data-stage="0">Start</button><button data-seq="A" data-stage="1">After 1st</button><button data-seq="A" data-stage="2">After both</button></div>
 <div class="canvaswrap"><canvas id="cubeA" aria-label="Cube under first x then y active rotations"></canvas></div>
 <p class="readout" id="stateA"></p>
@@ -12,6 +27,8 @@
 <h2>B — first Rᵧ, then Rₓ</h2>
 <div class="control"><label for="b1">First Rᵧ</label><input id="b1" type="range" min="-360" max="360" value="90" step="1"><input id="b1n" type="number" min="-360" max="360" step="any" value="90" aria-label="First B angle in degrees" style="width:70px;padding:4px">°</div>
 <div class="control"><label for="b2">Second Rₓ</label><input id="b2" type="range" min="-360" max="360" value="90" step="1"><input id="b2n" type="number" min="-360" max="360" step="any" value="90" aria-label="Second B angle in degrees" style="width:70px;padding:4px">°</div>
+<div class="buttons"><button id="playB">▶ Play / Resume</button><button id="pauseB">Ⅱ Pause</button><button id="resetB">↺ Back to start</button></div>
+<div class="control"><label for="progressB">Timeline</label><input id="progressB" type="range" min="0" max="2" value="0" step="0.001"><output id="progressTextB">Start</output></div>
 <div class="buttons"><button data-seq="B" data-stage="0">Start</button><button data-seq="B" data-stage="1">After 1st</button><button data-seq="B" data-stage="2">After both</button></div>
 <div class="canvaswrap"><canvas id="cubeB" aria-label="Cube under first y then x active rotations"></canvas></div>
 <p class="readout" id="stateB"></p>

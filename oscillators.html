@@ -62,11 +62,19 @@ function compute(){
  if(![a,b,c,s0,A,om].every(Number.isFinite)||a<=0||b<0||c<=0){$('type').textContent='Enter a > 0, b ≥ 0, c > 0';return false}
  let s=s0,v=0;tCache=[a,b,c,A,om];samples=[{t:0,s,v}];
  const deriv=(S,V,T)=>valAndSlope(S,V,T,a,b,c,A,om);
+ // Use internal RK4 substeps to keep the integrator stable for large b/a.
+ const maxRate=(b/a)+Math.sqrt(c/a)+Math.abs(om);
+ const substeps=Math.max(1,Math.ceil(dt*maxRate/1.0));
+ const dh=dt/substeps;
  for(let i=1;i<=Math.round(final/dt);i++){
-  const t=(i-1)*dt,k1=deriv(s,v,t),k2=deriv(s+dt*k1[0]/2,v+dt*k1[1]/2,t+dt/2),
-   k3=deriv(s+dt*k2[0]/2,v+dt*k2[1]/2,t+dt/2),k4=deriv(s+dt*k3[0],v+dt*k3[1],t+dt);
-  s+=dt*(k1[0]+2*k2[0]+2*k3[0]+k4[0])/6;
-  v+=dt*(k1[1]+2*k2[1]+2*k3[1]+k4[1])/6;
+  for(let j=0;j<substeps;j++){
+    const t=(i-1)*dt+j*dh;
+    const k1=deriv(s,v,t),k2=deriv(s+dh*k1[0]/2,v+dh*k1[1]/2,t+dh/2),
+      k3=deriv(s+dh*k2[0]/2,v+dh*k2[1]/2,t+dh/2),
+      k4=deriv(s+dh*k3[0],v+dh*k3[1],t+dh);
+    s+=dh*(k1[0]+2*k2[0]+2*k3[0]+k4[0])/6;
+    v+=dh*(k1[1]+2*k2[1]+2*k3[1]+k4[1])/6;
+  }
   samples.push({t:i*dt,s,v});
  }
  const ratio=b/(2*Math.sqrt(a*c));

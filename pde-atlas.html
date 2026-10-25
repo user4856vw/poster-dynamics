@@ -1,0 +1,103 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Which equation fits? — Poster Dynamics</title><link rel="stylesheet" href="assets/style.css">
+<style>
+.casegrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.case{border:1px solid #b9ced8;background:#fff;color:#27475e;border-radius:6px;padding:10px;text-align:left;cursor:pointer}
+.case[aria-pressed=true]{background:#dceef3;border-color:#28769d}
+.case span{display:block;font-size:12px;color:#546779;margin-top:3px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.gridinput{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gridinput label{display:block;font-weight:600}
+.gridinput input{width:100%}
+@media(max-width:720px){.casegrid{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}}
+</style></head><body>
+<header><div class="brand">Poster Dynamics · 05 · PDE atlas</div><h1>Same Pulse, Different Physics</h1><p>Choose the governing mechanism first; the shape of the solution follows.</p>
+<nav><a href="index.html">Home</a><a href="conics.html">Conics</a><a href="rotations.html">Rotations</a><a href="complex.html">Complex</a><a href="oscillators.html">Oscillator</a><a aria-current="page" href="pde-atlas.html">PDE atlas</a></nav></header>
+<main><section class="panel"><h2>1. What does the material do?</h2>
+<div class="casegrid">
+<button class="case" data-mode="diffusion" aria-pressed="true"><strong>Diffusion</strong><span>Spreads; gradients drive flux</span></button>
+<button class="case" data-mode="advection" aria-pressed="false"><strong>Advection</strong><span>Moves with a constant flow</span></button>
+<button class="case" data-mode="wave" aria-pressed="false"><strong>Wave</strong><span>Inertia + distributed restoring</span></button>
+<button class="case" data-mode="relaxation" aria-pressed="false"><strong>Local ODE</strong><span>Every point relaxes independently</span></button>
+</div>
+<div class="readout"><h2 id="name"></h2><p class="equation" id="equation"></p><p id="mechanism"></p><p><strong>Ansatz:</strong> <span id="ansatz"></span></p><p class="note" id="conditions"></p></div>
+<h2>2. Start with the same initial pulse</h2>
+<div class="control"><label for="time">Time t</label><input id="time" type="range" min="0" max="4" step=".01" value="0"><output id="timeValue">0.00</output></div>
+<div class="gridinput">
+<div><label for="coef">D / velocity / c / rate</label><input id="coef" type="range" min=".2" max="3" step=".1" value="1"><output id="coefVal">1.0</output></div>
+<div><label for="width">Initial pulse width σ</label><input id="width" type="range" min=".3" max="2" step=".1" value=".8"><output id="widthVal">0.8</output></div>
+<div><label for="speed">Playback speed</label><input id="speed" type="range" min=".25" max="3" step=".25" value="1"><output id="speedVal">1×</output></div>
+</div>
+<div class="buttons"><button id="play">▶ Play</button><button id="pause">Ⅱ Pause</button><button id="reset">↺ Back to initial pulse</button></div>
+<div class="canvaswrap"><canvas id="plot" aria-label="Time evolution of pulse according to chosen differential equation"></canvas></div>
+<p class="note">Gray dashed curve = initial condition. Colored curve = current solution. The x-axis is space, not time. No boundaries are imposed: all formulas model an infinite one-dimensional line.</p></section>
+<div class="two">
+<section class="panel"><h2>3. Why these forms?</h2>
+<p><strong>Diffusion:</strong> a Gaussian stays Gaussian, but its width grows as √(σ² + 2Dt); its height decreases to conserve area.</p>
+<p><strong>Advection:</strong> the original shape travels intact: f(x − vt).</p>
+<p><strong>Wave:</strong> for zero initial velocity, one pulse splits into two half-amplitude pulses traveling at ±c.</p>
+<p><strong>Local relaxation:</strong> every position follows the same ODE uₜ = −ku, so the shape only shrinks in height.</p></section>
+<section class="panel"><h2>4. When does the model change?</h2>
+<p>Add a spatial boundary and its conditions, and the appropriate modes may change: sine waves for fixed ends; cosine modes for insulated ends.</p>
+<p>Add both transport and diffusion and obtain <strong>uₜ + v uₓ = D uₓₓ</strong> (constant coefficients). Add sources or nonlinear reaction and another term appears.</p>
+<p>For steady fields with no local source, the time derivative vanishes and <strong>∇²u = 0</strong> (Laplace equation). With local source, use a Poisson equation.</p></section></div>
+</main><footer>All four plots use exact analytic solutions for the specified linear 1D idealizations.</footer>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const modes={
+diffusion:{name:'Diffusion / heat equation',eq:'uₜ = D uₓₓ',mech:'A flux proportional to −uₓ, inserted into a local conservation law, creates a second spatial derivative.',ans:'Gaussian similarity solution for the infinite line; Fourier modes for bounded problems.',cond:'Assumption: constant D > 0 and no sources. The integral of u over the full line stays constant.'},
+advection:{name:'Advection / transport equation',eq:'uₜ + v uₓ = 0',mech:'Matter is transported at speed v. There is no diffusion: the material profile keeps its shape.',ans:'Method of characteristics: u(x,t) = f(x − vt).',cond:'Assumption: constant flow velocity v, no spreading, infinite line.'},
+wave:{name:'Wave equation',eq:'uₜₜ = c² uₓₓ',mech:'Distributed inertia and restoring stresses transmit disturbances at finite speed.',ans:'D’Alembert: u(x,t) = [f(x−ct) + f(x+ct)]/2 when uₜ(x,0)=0.',cond:'Assumptions: constant wave speed c, initial velocity zero, infinite line.'},
+relaxation:{name:'First-order local ODE',eq:'uₜ = −k u',mech:'Each position relaxes independently. No spatial coupling means no transport or broadening.',ans:'Exponential: u(x,t) = f(x) e^(−kt).',cond:'Assumption: constant local rate k > 0 and no spatial interaction.'}
+};
+let mode='diffusion',time=0,last=0,playing=false;
+const gauss=(x,s)=>Math.exp(-x*x/(2*s*s));
+function initial(x){return gauss(x,Number($('width').value))}
+function solved(x,t){
+ const sig=Number($('width').value),p=Number($('coef').value);
+ switch(mode){
+ case 'diffusion':{const width=Math.sqrt(sig*sig+2*p*t);return sig/width*gauss(x,width)}
+ case 'advection':return gauss(x-p*t,sig);
+ case 'wave':return .5*(gauss(x-p*t,sig)+gauss(x+p*t,sig));
+ case 'relaxation':return gauss(x,sig)*Math.exp(-p*t);
+ }
+}
+function plot(){
+ const c=$('plot'),w=Math.max(300,c.clientWidth),h=355,d=window.devicePixelRatio||1;
+ c.width=Math.round(w*d);c.height=Math.round(h*d);c.style.height=h+'px';
+ const g=c.getContext('2d');g.setTransform(d,0,0,d,0,0);
+ g.fillStyle='#fff';g.fillRect(0,0,w,h);
+ const left=38,bot=h-38,right=w-18,top=24;
+ const pos=x=>left+(x+10)*(right-left)/20;
+ const y=v=>bot-v*(bot-top)*.94;
+ g.strokeStyle='#dce8ed';g.lineWidth=1;
+ for(let n=0;n<=8;n++){const yy=top+n*(bot-top)/8;g.beginPath();g.moveTo(left,yy);g.lineTo(right,yy);g.stroke()}
+ g.strokeStyle='#607988';g.beginPath();g.moveTo(left,top);g.lineTo(left,bot);g.lineTo(right,bot);g.stroke();
+ g.fillStyle='#445c6c';g.font='13px system-ui';g.fillText('x = −10',left,bot+21);g.fillText('x = +10',right-50,bot+21);
+ function curve(fun,color,dash){
+  g.beginPath();for(let i=0;i<=650;i++){const x=-10+20*i/650,xx=pos(x),yy=y(fun(x));if(i===0)g.moveTo(xx,yy);else g.lineTo(xx,yy)}
+  g.lineWidth=2.4;g.strokeStyle=color;g.setLineDash(dash);g.stroke();g.setLineDash([]);
+ }
+ curve(initial,'#9babb6',[6,5]);
+ curve(x=>solved(x,time),'#176e9c',[]);
+ $('time').value=time;$('timeValue').textContent=time.toFixed(2);
+ $('coefVal').textContent=Number($('coef').value).toFixed(1);
+ $('widthVal').textContent=Number($('width').value).toFixed(1);
+ $('speedVal').textContent=Number($('speed').value)+'×';
+}
+function explain(){
+ const m=modes[mode];$('name').textContent=m.name;$('equation').textContent=m.eq;
+ $('mechanism').textContent=m.mech;$('ansatz').textContent=m.ans;$('conditions').textContent=m.cond;
+ document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
+ plot();
+}
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;time=0;playing=false;explain()}));
+['time','coef','width','speed'].forEach(id=>$(id).addEventListener('input',()=>{if(id==='time'){time=Number($('time').value);playing=false;}plot()}));
+$('play').onclick=()=>{if(time>=4)time=0;playing=true;last=0;plot()};
+$('pause').onclick=()=>{playing=false;plot()};
+$('reset').onclick=()=>{playing=false;time=0;plot()};
+function tick(now){if(playing){if(last)time=Math.min(4,time+Math.min(.08,(now-last)/1000)*Number($('speed').value));last=now;if(time>=4)playing=false;plot()}else last=0;requestAnimationFrame(tick)}
+window.addEventListener('resize',plot);explain();requestAnimationFrame(tick);
+})();
+</script></body></html>

@@ -1,0 +1,17 @@
+name: Check mini DAW
+on:
+  push:
+    paths:
+      - daw.html
+      - tests/check-daw.mjs
+      - .github/workflows/check-daw.yml
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tests/check-daw.mjs

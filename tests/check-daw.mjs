@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const html=fs.readFileSync('daw.html','utf8');
+const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+assert.equal(scripts.length,1,'one self-contained script');
+new vm.Script(scripts[0],{filename:'daw-inline.js'}); // actual JS parse
+const ids=['play','stop','reset','bpm','master','pianoRoll','bassRoll','drumRoll','wave','cutoff','attack','release','lead','bass','drums','echo','scope','state','beatLabel','engine','preset','clearDrums','clearNotes','randomMelody'];
+const declared=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
+assert.equal(new Set(declared).size,declared.length,'unique element ids');
+for(const id of ids) assert(declared.includes(id),'missing UI control: '+id);
+assert(!/<script\s+src=|<link\s+[^>]*href="https?:/i.test(html),'must run offline');
+const context={byId:(id)=>({value:120})};
+vm.createContext(context);
+vm.runInContext('function stepSeconds(){return 15/Number(byId("bpm").value)};function midiHz(n){return 440*Math.pow(2,(n-69)/12)}',context);
+assert.equal(context.stepSeconds(),.125);
+assert.equal(context.midiHz(69),440);
+assert(Math.abs(context.midiHz(72)-523.251)<.002);
+assert(html.includes('audio.createOscillator()')&&html.includes('audio.createBiquadFilter()'),'real Web Audio chain');
+assert(html.includes('audio.createAnalyser()'),'actual waveform analyser');
+console.log('PASS: inline JS syntax, unique controls, offline dependencies, timing, pitches, synthesis, analyser');

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102c41">
+<title>Mini DAW · From Notes to Sound · Poster Dynamics</title>
+<style>
+:root{--bg:#edf3f5;--ink:#142d40;--muted:#506b7c;--border:#c4d5dd;--purple:#7451a3;--violetbg:#f1eafa;--teal:#087e96;--tealbg:#e3f4f7;--orange:#bf721a;--orangebg:#fff2e1;--surface:#fff;--dark:#102c41}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}header{background:var(--dark);color:white;padding:24px clamp(16px,4vw,60px) 21px}header h1{font-size:clamp(25px,3vw,42px);margin:4px 0}header p{max-width:900px;color:#cce0e9;margin:5px 0 15px}header a{color:#aee8f1}main{max-width:1360px;padding:22px 18px 40px;margin:auto}.nav{font-size:13px;letter-spacing:.03em}h2{margin:0 0 8px;font-size:21px}h3{margin:3px 0 8px;font-size:16px}.label{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.09em;text-transform:uppercase}.hint{font-size:13px;color:var(--muted)}.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:17px;min-width:0}.cardgrid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);gap:15px}.stack{display:grid;gap:15px}.controls{display:flex;gap:13px;flex-wrap:wrap;align-items:end}.knob{display:grid;gap:2px;min-width:110px;flex:1}.knob span{font-size:13px;font-weight:700}.knob output{font-variant-numeric:tabular-nums;color:var(--muted)}input[type=range]{accent-color:var(--teal);width:100%}select,button{font:inherit}select{width:100%;height:38px;background:#fff;border:1px solid #adbfca;border-radius:6px;padding:3px 8px;color:var(--ink)}button{border:1px solid #9db6c3;border-radius:7px;padding:8px 13px;background:white;color:var(--ink);font-weight:700;cursor:pointer}button:hover{background:#e4f4f7}button:focus-visible,.step:focus-visible{outline:3px solid #eeae40;outline-offset:2px}button.primary{background:#087f95;color:white;border-color:#087f95;min-width:95px}button.primary:hover{background:#006376}button:disabled{opacity:.5}.status{font-size:13px;color:var(--muted)}.pill{display:inline-block;border-radius:4px;background:var(--violetbg);color:var(--purple);padding:2px 7px;font-size:12px;font-weight:800}.pill.teal{background:var(--tealbg);color:var(--teal)}.pill.orange{background:var(--orangebg);color:var(--orange)}.sequencer{overflow-x:auto;padding:2px 0 5px}.roll{display:grid;grid-template-columns:62px repeat(16,minmax(27px,1fr));gap:3px;min-width:625px;margin-top:9px}.step{border:1px solid #d0dce3;background:#f2f6f8;height:27px;border-radius:3px;min-width:0;padding:0;position:relative;touch-action:manipulation}.step:nth-child(4n + 2){border-left-color:#90b0bc}.step.on{background:var(--purple);border-color:var(--purple)}.step.drumon{background:var(--teal);border-color:var(--teal)}.step.playing{outline:3px solid var(--orange);outline-offset:0;z-index:1}.rowlabel{font-size:12px;align-self:center;font-weight:800;white-space:nowrap}.stephead{height:22px;display:grid;place-items:center;font-size:11px;color:var(--muted)}.sep{height:1px;background:var(--border);margin:14px 0}.trackhead{display:flex;align-items:center;justify-content:space-between;gap:12px}.mini{font-size:12px;color:var(--muted)}.buttonline{display:flex;gap:7px;flex-wrap:wrap}canvas{background:#0b2939;border-radius:6px;display:block;width:100%;height:130px}.route{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:9px 0 15px}.route .node{border:1px solid #90c4ce;color:#075e76;background:var(--tealbg);border-radius:6px;padding:9px 12px;text-align:center;font-weight:800;font-size:12px}.route .node.midi{background:var(--violetbg);color:var(--purple);border-color:#c6b2df}.route .node.control{background:var(--orangebg);color:var(--orange);border-color:#e1bc89}.route .arrow{font-weight:bold;color:#688c9a}.explainer{display:grid;gap:7px;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:13px}.explainer>div{border-left:4px solid var(--purple);padding:4px 9px;font-size:13px;background:#f5f3f9}.explainer>div:nth-child(2){border-color:var(--teal);background:#eff8fa}.explainer>div:nth-child(3){border-color:var(--orange);background:#fff8ef}.footer{margin-top:16px;color:#50697a;font-size:13px}strong{font-weight:750}.mono{font-variant-numeric:tabular-nums;font-family:ui-monospace,monospace}.readout{margin-top:8px;font-size:13px;color:var(--muted)}.audio-notice{font-size:12px;color:#4d6679}.sampletag{display:inline-block;background:var(--tealbg);color:var(--teal);padding:1px 7px;font-size:11px;border-radius:4px}.code{font-family:ui-monospace,monospace}label{cursor:default}@media(max-width:990px){.cardgrid{grid-template-columns:1fr}.explainer{grid-template-columns:1fr}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style></head><body>
+<header><div class="nav"><a href="index.html">← Poster Dynamics</a> / 04 · Electronic music</div><h1>MINI DAW — FROM NOTES TO SOUND</h1><p>Edit events on a musical grid, listen to them as a synthesizer generates audio, change the signal processors, and inspect the actual waveform. All sound is generated locally by your browser; no samples, logins or external libraries.</p></header>
+<main>
+<section class="panel" aria-label="Transport" style="margin-bottom:15px">
+ <div class="trackhead"><div><div class="label">01 · Transport / Musical time</div><h2>One bar · 4/4 · 16 sixteenth-note steps</h2></div><span class="pill orange" id="beatLabel">BAR 1 · BEAT 1</span></div>
+ <div class="controls">
+  <div class="buttonline"><button id="play" class="primary">▶ Play</button><button id="stop">■ Stop</button><button id="reset">↺ Reset example</button></div>
+  <label class="knob" style="max-width:225px"><span>Tempo · <output id="bpmVal">110</output> BPM</span><input id="bpm" type="range" min="60" max="190" step="1" value="110"></label>
+  <label class="knob" style="max-width:260px"><span>Master output · <output id="masterVal">70</output>%</span><input id="master" type="range" min="0" max="100" value="70"></label>
+  <span class="status" id="state" role="status">Stopped — press Play to enable audio</span>
+ </div><div class="hint" style="margin-top:7px">At 120 BPM, one beat = 0.5 s; one step = 0.125 s; this four-beat bar = 2 s. Notes and drum hits are scheduled ahead of the audio clock, not driven directly by screen repainting.</div>
+</section>
+<div class="cardgrid">
+<div class="stack">
+ <section class="panel">
+ <div class="trackhead"><div><div class="label">02 · MIDI / Musical events</div><h2>Piano roll · Lead synth</h2></div><span class="pill">PURPLE = NOTE EVENTS</span></div>
+ <p class="hint">Click cells to enter or remove notes. One pitch per sixteenth-note step. These cells store pitch and time—not audio samples.</p>
+ <div class="sequencer"><div id="pianoRoll" class="roll" role="group" aria-label="Lead synthesizer piano roll"></div></div>
+ <div class="sep"></div>
+ <div class="trackhead"><div><h3>Bass notes</h3><div class="hint">Each note sustains for approximately three steps.</div></div><button id="randomMelody">New melody</button></div>
+ <div class="sequencer"><div id="bassRoll" class="roll" role="group" aria-label="Bass piano roll"></div></div>
+ </section>
+ <section class="panel">
+ <div class="trackhead"><div><div class="label">03 · MIDI / Drum sequencer</div><h2>Rhythm pattern</h2></div><span class="pill teal">TEAL = TRIGGERS</span></div>
+ <p class="hint">Drum triggers are also events. The browser synthesizes a kick, snare and closed hi-hat when each event fires.</p>
+ <div class="sequencer"><div id="drumRoll" class="roll" role="group" aria-label="Drum trigger grid"></div></div>
+ <div class="buttonline" style="margin-top:10px"><button id="clearDrums">Clear drums</button><button id="clearNotes">Clear notes</button><button id="preset">Restore groove</button></div>
+ </section>
+</div>
+<div class="stack">
+<section class="panel"><div class="label">04 · Instrument / Effects</div><h2>What turns MIDI into audio?</h2>
+ <div class="route"><span class="node midi">MIDI note</span><span class="arrow">→</span><span class="node">Oscillator</span><span class="arrow">→</span><span class="node">Envelope</span><span class="arrow">→</span><span class="node">Low-pass</span><span class="arrow">→</span><span class="node">Mixer</span></div>
+ <div class="controls">
+ <label class="knob"><span>Oscillator waveform</span><select id="wave"><option value="sawtooth">Sawtooth (bright)</option><option value="sine">Sine (pure)</option><option value="square">Square (hollow)</option><option value="triangle">Triangle (soft)</option></select></label>
+ <label class="knob"><span>Filter cutoff · <output id="cutoffVal">1500</output> Hz</span><input id="cutoff" type="range" min="140" max="8000" value="1500"></label>
+ <label class="knob"><span>Attack · <output id="attackVal">15</output> ms</span><input id="attack" type="range" min="5" max="220" value="15"></label>
+ <label class="knob"><span>Release · <output id="releaseVal">130</output> ms</span><input id="release" type="range" min="20" max="650" value="130"></label>
+ </div>
+ <div class="sep"></div><h3>Sound design experiment</h3><p class="hint">Sawtooth → low cutoff: fewer upper harmonics. Increase attack: a slower onset. Increase release: a longer decay. These controls change audio processing, not the underlying MIDI notes.</p>
+</section>
+<section class="panel"><div class="label">05 · Mixer / Signal routing</div><h2>Three audio channels to one master</h2>
+ <div class="controls">
+ <label class="knob"><span>Lead · <output id="leadVal">65</output>%</span><input id="lead" type="range" min="0" max="100" value="65"></label>
+ <label class="knob"><span>Bass · <output id="bassVal">65</output>%</span><input id="bass" type="range" min="0" max="100" value="65"></label>
+ <label class="knob"><span>Drums · <output id="drumsVal">65</output>%</span><input id="drums" type="range" min="0" max="100" value="65"></label>
+ </div>
+ <div class="controls" style="margin-top:12px"><label class="knob"><span>Echo send · <output id="echoVal">12</output>%</span><input id="echo" type="range" min="0" max="40" value="12"></label></div>
+ <div class="route" style="margin-top:12px"><span class="node">Lead + Bass + Drums</span><span class="arrow">→</span><span class="node">Master</span><span class="arrow">→</span><span class="node">Speakers</span></div>
+ <div class="route"><span class="node">Post-fader copies</span><span class="arrow">→</span><span class="node">Delay / echo</span><span class="arrow">→</span><span class="node">Master</span></div>
+ <p class="hint">The echo is a <em>parallel send/return</em>. Turning it up leaves the dry signal present while adding delayed copies.</p>
+</section>
+<section class="panel"><div class="label">06 · Audio samples / Real-time engine</div><h2>Actual output waveform</h2>
+ <canvas id="scope" width="720" height="170" role="img" aria-label="Live oscilloscope of the audio output"></canvas>
+ <div class="readout mono" id="engine">48 kHz example: 128 frames ≈ 2.67 ms · actual context not started</div>
+ <p class="hint">The oscilloscope shows sampled output amplitude. Browser audio may use a different hardware sample rate and block schedule. A missed real-time deadline produces an audible glitch.</p>
+</section>
+</div></div>
+<section class="panel" style="margin-top:15px"><div class="label">07 · Understanding the abstractions</div><h2>Same project, three different kinds of data</h2>
+<div class="explainer"><div><strong>Purple · MIDI</strong><br>Discrete events: note number, start time, duration and velocity. MIDI notes have no sound without an instrument.</div><div><strong>Teal · Audio</strong><br>Continuously generated or recorded pressure-wave samples, processed in time-ordered buffers.</div><div><strong>Orange · Control</strong><br>Values such as gain and filter cutoff. Automation changes processor parameters over time rather than being sound itself.</div></div>
+<p class="footer">This deliberately small DAW models the essential abstractions. Each melodic step is monophonic, with fixed velocity, and each song is a repeating single-bar loop. Real DAWs add tracks, editing, recording, plugin graphs, synchronization, sample libraries and arbitrary arrangements. Browser playback requires a Play click. For QR links on the printed poster: <span class="code">poster-dynamics/daw.html</span>.</p>
+</section>
+</main>
+<script>
+'use strict';
+const byId=id=>document.getElementById(id);
+const pitches=[{n:'C5',m:72},{n:'B4',m:71},{n:'A4',m:69},{n:'G4',m:67},{n:'F4',m:65},{n:'E4',m:64},{n:'D4',m:62},{n:'C4',m:60}];
+const bassPitches=[{n:'C3',m:48},{n:'B2',m:47},{n:'A2',m:45},{n:'G2',m:43},{n:'F2',m:41},{n:'E2',m:40},{n:'D2',m:38},{n:'C2',m:36}];
+const melodyPreset=[60,null,64,null,67,69,67,null,65,null,64,62,60,null,67,null];
+const bassPreset=[36,null,null,null,43,null,null,null,41,null,null,null,43,null,null,null];
+const drumsPreset=[[0,4,8,12],[4,12],[2,6,10,14]];
+let melody=melodyPreset.slice(),bass=bassPreset.slice(),drums=drumsPreset.map(r=>r.slice());
+let audio=null,master=null,analyser=null,noiseBuf=null,leadBus=null,bassBus=null,drumBus=null,echoSend=null,feedback=null,echoDelay=null,interval=null;
+let playing=false,stepIndex=0,nextTime=0,currentStep=-1,scheduled=[],lastBpm=110;
+let activeVoices=new Set();
+function stepsPerSecond(){return Number(byId('bpm').value)/15;} // 16th steps/minute = BPM*4
+function stepSeconds(){return 15/Number(byId('bpm').value);}
+function midiHz(n){return 440*Math.pow(2,(n-69)/12);}
+function cellId(kind,row,col){return kind+'-'+row+'-'+col;}
+function addGrid(el,kind,rows,notes){
+ el.innerHTML='';
+ const corner=document.createElement('div');corner.className='rowlabel';corner.textContent=kind==='drums'?'HITS':'PITCH';el.append(corner);
+ for(let c=0;c<16;c++){let l=document.createElement('div');l.className='stephead';l.textContent=c%4===0?String(c/4+1):'·';el.append(l);}
+ rows.forEach((r,ri)=>{
+   const lab=document.createElement('div');lab.className='rowlabel';lab.textContent=kind==='drums'?r:r.n;el.append(lab);
+   for(let c=0;c<16;c++){
+     const b=document.createElement('button');b.type='button';b.id=cellId(kind,ri,c);b.className='step';
+     const on=kind==='drums'?drums[ri].includes(c):notes[c]===r.m;
+     if(on)b.classList.add(kind==='drums'?'drumon':'on');
+     const fullName=kind==='drums'?r:r.n;
+     b.setAttribute('aria-label',fullName+' at step '+(c+1)+(on?' enabled':' disabled'));
+     b.setAttribute('aria-pressed',String(on));
+     b.addEventListener('click',()=>{
+       if(kind==='drums'){const arr=drums[ri];const at=arr.indexOf(c);if(at>=0)arr.splice(at,1);else arr.push(c);}
+       else{notes[c]=notes[c]===r.m?null:r.m;}
+       rebuild(); // state is data, DOM is a projection
+     });
+     el.append(b);
+   }
+ });
+}
+function rebuild(){addGrid(byId('pianoRoll'),'lead',pitches,melody);addGrid(byId('bassRoll'),'bass',bassPitches,bass);addGrid(byId('drumRoll'),'drums',['KICK','SNARE','HI-HAT'],null);markPlayhead(currentStep);}
+function markPlayhead(s){
+ for(const b of document.querySelectorAll('.step.playing'))b.classList.remove('playing');
+ if(s>=0)for(const b of document.querySelectorAll('.step'))if(b.id.endsWith('-'+s))b.classList.add('playing');
+ byId('beatLabel').textContent=s<0?'BAR 1 · BEAT 1':'BAR 1 · BEAT '+(Math.floor(s/4)+1)+' / STEP '+(s+1);
+}
+function buildAudio(){
+ if(audio)return;
+ const AC=window.AudioContext||window.webkitAudioContext;
+ if(!AC){byId('state').textContent='Web Audio unsupported in this browser';throw Error('Web Audio API unavailable');}
+ audio=new AC();
+ master=audio.createGain();master.gain.value=.70;
+ analyser=audio.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.65;
+ master.connect(analyser);analyser.connect(audio.destination);
+ leadBus=audio.createGain();bassBus=audio.createGain();drumBus=audio.createGain();
+ leadBus.connect(master);bassBus.connect(master);drumBus.connect(master);
+ echoSend=audio.createGain();echoDelay=audio.createDelay(1.2);feedback=audio.createGain();
+ echoDelay.delayTime.value=.29;feedback.gain.value=.23;
+ leadBus.connect(echoSend);bassBus.connect(echoSend);
+ echoSend.connect(echoDelay);echoDelay.connect(feedback);feedback.connect(echoDelay);
+ const wet=audio.createGain();wet.gain.value=.32;echoDelay.connect(wet);wet.connect(master);
+ noiseBuf=audio.createBuffer(1,Math.round(audio.sampleRate*.4),audio.sampleRate);
+ const data=noiseBuf.getChannelData(0);
+ for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+ adjustAudio();
+ byId('engine').textContent=audio.sampleRate.toLocaleString()+' samples/s · analyser FFT 2048 samples · scheduling lookahead 120 ms';
+}
+function adjustAudio(){
+ if(!audio)return;
+ const t=audio.currentTime;
+ master.gain.setTargetAtTime(Number(byId('master').value)/100,t,.012);
+ leadBus.gain.setTargetAtTime(Number(byId('lead').value)/100,t,.012);
+ bassBus.gain.setTargetAtTime(Number(byId('bass').value)/100,t,.012);
+ drumBus.gain.setTargetAtTime(Number(byId('drums').value)/100,t,.012);
+ echoSend.gain.setTargetAtTime(Number(byId('echo').value)/100,t,.012);
+}
+function voice(note,when,duration,isBass=false){
+ const osc=audio.createOscillator(),filt=audio.createBiquadFilter(),env=audio.createGain();
+ const attack=isBass?.009:Number(byId('attack').value)/1000;
+ const release=isBass?.11:Number(byId('release').value)/1000;
+ osc.type=isBass?'triangle':byId('wave').value;
+ osc.frequency.value=midiHz(note);
+ filt.type='lowpass';filt.frequency.value=isBass?900:Number(byId('cutoff').value);
+ filt.Q.value=.65;
+ env.gain.setValueAtTime(0,when);
+ env.gain.linearRampToValueAtTime(isBass?.50:.32,when+Math.min(attack,duration*.80));
+ const endHold=when+duration;
+ env.gain.setValueAtTime(isBass?.50:.32,endHold);
+ env.gain.exponentialRampToValueAtTime(.001,endHold+release);
+ osc.connect(filt);filt.connect(env);env.connect(isBass?bassBus:leadBus);
+ osc.start(when);osc.stop(endHold+release+.04);
+ activeVoices.add(osc);osc.addEventListener('ended',()=>{activeVoices.delete(osc);osc.disconnect();filt.disconnect();env.disconnect();},{once:true});
+}
+function kick(t){const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(145,t);o.frequency.exponentialRampToValueAtTime(52,t+.13);g.gain.setValueAtTime(.7,t);g.gain.exponentialRampToValueAtTime(.001,t+.26);o.connect(g);g.connect(drumBus);o.start(t);o.stop(t+.28);activeVoices.add(o);o.addEventListener('ended',()=>{activeVoices.delete(o);o.disconnect();g.disconnect();},{once:true});}
+function noiseHit(t,hat){const src=audio.createBufferSource(),f=audio.createBiquadFilter(),g=audio.createGain();src.buffer=noiseBuf;f.type=hat?'highpass':'bandpass';f.frequency.value=hat?6500:1800;f.Q.value=hat?.5:.8;g.gain.setValueAtTime(hat?.17:.30,t);g.gain.exponentialRampToValueAtTime(.001,t+(hat?.065:.15));src.connect(f);f.connect(g);g.connect(drumBus);src.start(t);src.stop(t+(hat?.08:.17));}
+function scheduleOne(i,t){
+ const dur=stepSeconds();
+ if(melody[i]!=null)voice(melody[i],t,dur*.76,false);
+ if(bass[i]!=null)voice(bass[i],t,dur*3.35,true);
+ if(drums[0].includes(i))kick(t);
+ if(drums[1].includes(i))noiseHit(t,false);
+ if(drums[2].includes(i))noiseHit(t,true);
+ scheduled.push({i,time:t}); // UI follows scheduled audio, not the other way round
+}
+function scheduler(){
+ if(!audio||!playing)return;
+ while(nextTime<audio.currentTime+.12){scheduleOne(stepIndex,nextTime);nextTime+=stepSeconds();stepIndex=(stepIndex+1)%16;}
+}
+function paint(){
+ const cv=byId('scope'),ctx=cv.getContext('2d'),w=cv.width,h=cv.height;
+ ctx.fillStyle='#0b2939';ctx.fillRect(0,0,w,h);
+ ctx.strokeStyle='#416473';ctx.lineWidth=1;
+ for(let y=0;y<=h;y+=h/4){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+ if(audio&&analyser){const arr=new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(arr);ctx.strokeStyle='#70dbdf';ctx.lineWidth=2.5;ctx.beginPath();for(let i=0;i<w;i++){let value=arr[Math.floor(i*arr.length/w)]/128-1,y=h/2-value*h*.43;if(i===0)ctx.moveTo(i,y);else ctx.lineTo(i,y);}ctx.stroke();}
+ else {ctx.fillStyle='#abc7d5';ctx.font='18px system-ui';ctx.fillText('Press Play to activate the sound engine',18,h/2+5);}
+ if(playing&&audio){
+  while(scheduled.length>1&&scheduled[1].time<=audio.currentTime)scheduled.shift();
+  const target=scheduled[0];if(target&&audio.currentTime>=target.time&&target.i!==currentStep){currentStep=target.i;markPlayhead(currentStep);}
+ }
+ requestAnimationFrame(paint);
+}
+async function start(){
+ try{buildAudio();await audio.resume();}catch(e){byId('state').textContent=e.message;return;}
+ if(playing)return;
+ playing=true;stepIndex=0;nextTime=audio.currentTime+.06;scheduled=[];currentStep=-1;
+ byId('play').textContent='▶ Playing';byId('play').disabled=true;byId('state').textContent='Audio engine running';
+ scheduler();interval=setInterval(scheduler,25);
+}
+function stop(){
+ playing=false;if(interval){clearInterval(interval);interval=null;}scheduled=[];currentStep=-1;markPlayhead(-1);
+ byId('play').disabled=false;byId('play').textContent='▶ Play';
+ byId('state').textContent=audio?'Stopped — residual release / echo may decay':'Stopped';
+ if(audio){for(const osc of Array.from(activeVoices)){try{osc.stop(audio.currentTime+.01);}catch(e){}}}
+}
+byId('play').addEventListener('click',start);byId('stop').addEventListener('click',stop);
+byId('reset').addEventListener('click',()=>{stop();melody=melodyPreset.slice();bass=bassPreset.slice();drums=drumsPreset.map(r=>r.slice());['bpm','master','lead','bass','drums','echo','cutoff','attack','release'].forEach(id=>{const defaults={bpm:110,master:70,lead:65,bass:65,drums:65,echo:12,cutoff:1500,attack:15,release:130};byId(id).value=defaults[id];});byId('wave').value='sawtooth';updateLabels();adjustAudio();rebuild();});
+byId('preset').addEventListener('click',()=>{drums=drumsPreset.map(a=>a.slice());rebuild();});
+byId('clearDrums').addEventListener('click',()=>{drums=[[],[],[]];rebuild();});
+byId('clearNotes').addEventListener('click',()=>{melody=Array(16).fill(null);bass=Array(16).fill(null);rebuild();});
+byId('randomMelody').addEventListener('click',()=>{const pool=[60,62,64,65,67,69,71,72];melody=Array.from({length:16},(_,i)=>Math.random()<.30?null:pool[Math.floor(Math.random()*pool.length)]);rebuild();});
+function updateLabels(){for(const id of ['bpm','master','lead','bass','drums','echo','cutoff','attack','release'])byId(id+'Val').textContent=byId(id).value;}
+for(const id of ['bpm','master','lead','bass','drums','echo','cutoff','attack','release'])byId(id).addEventListener('input',()=>{updateLabels();if(id!=='bpm')adjustAudio();});
+byId('bpm').addEventListener('change',()=>{if(playing){stop();start();}}); // restart cleanly if the musical clock changes
+window.addEventListener('pagehide',stop);
+rebuild();updateLabels();requestAnimationFrame(paint);
+</script></body></html>

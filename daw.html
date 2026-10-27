@@ -11,7 +11,7 @@
  <div class="trackhead"><div><div class="label">01 · Transport / Musical time</div><h2>One bar · 4/4 · 16 sixteenth-note steps</h2></div><span class="pill orange" id="beatLabel">BAR 1 · BEAT 1</span></div>
  <div class="controls">
   <div class="buttonline"><button id="play" class="primary">▶ Play</button><button id="stop">■ Stop</button><button id="reset">↺ Reset example</button></div>
-  <label class="knob" style="max-width:225px"><span>Tempo · <output id="bpmVal">110</output> BPM</span><input id="bpm" type="range" min="60" max="190" step="1" value="110"></label>
+  <label class="knob" style="max-width:225px"><span>Tempo · <output id="bpmVal">120</output> BPM</span><input id="bpm" type="range" min="60" max="190" step="1" value="120"></label>
   <label class="knob" style="max-width:260px"><span>Master output · <output id="masterVal">70</output>%</span><input id="master" type="range" min="0" max="100" value="70"></label>
   <span class="status" id="state" role="status">Stopped — press Play to enable audio</span>
  </div><div class="hint" style="margin-top:7px">At 120 BPM, one beat = 0.5 s; one step = 0.125 s; this four-beat bar = 2 s. Notes and drum hits are scheduled ahead of the audio clock, not driven directly by screen repainting.</div>
@@ -76,7 +76,7 @@ const bassPreset=[36,null,null,null,43,null,null,null,41,null,null,null,43,null,
 const drumsPreset=[[0,4,8,12],[4,12],[2,6,10,14]];
 let melody=melodyPreset.slice(),bass=bassPreset.slice(),drums=drumsPreset.map(r=>r.slice());
 let audio=null,master=null,analyser=null,noiseBuf=null,leadBus=null,bassBus=null,drumBus=null,echoSend=null,feedback=null,echoDelay=null,interval=null;
-let playing=false,stepIndex=0,nextTime=0,currentStep=-1,scheduled=[],lastBpm=110;
+let playing=false,stepIndex=0,nextTime=0,currentStep=-1,scheduled=[];
 let activeVoices=new Set();
 function stepsPerSecond(){return Number(byId('bpm').value)/15;} // 16th steps/minute = BPM*4
 function stepSeconds(){return 15/Number(byId('bpm').value);}
@@ -199,7 +199,7 @@ function stop(){
  if(audio){for(const osc of Array.from(activeVoices)){try{osc.stop(audio.currentTime+.01);}catch(e){}}}
 }
 byId('play').addEventListener('click',start);byId('stop').addEventListener('click',stop);
-byId('reset').addEventListener('click',()=>{stop();melody=melodyPreset.slice();bass=bassPreset.slice();drums=drumsPreset.map(r=>r.slice());['bpm','master','lead','bass','drums','echo','cutoff','attack','release'].forEach(id=>{const defaults={bpm:110,master:70,lead:65,bass:65,drums:65,echo:12,cutoff:1500,attack:15,release:130};byId(id).value=defaults[id];});byId('wave').value='sawtooth';updateLabels();adjustAudio();rebuild();});
+byId('reset').addEventListener('click',()=>{stop();melody=melodyPreset.slice();bass=bassPreset.slice();drums=drumsPreset.map(r=>r.slice());['bpm','master','lead','bass','drums','echo','cutoff','attack','release'].forEach(id=>{const defaults={bpm:120,master:70,lead:65,bass:65,drums:65,echo:12,cutoff:1500,attack:15,release:130};byId(id).value=defaults[id];});byId('wave').value='sawtooth';updateLabels();adjustAudio();rebuild();});
 byId('preset').addEventListener('click',()=>{drums=drumsPreset.map(a=>a.slice());rebuild();});
 byId('clearDrums').addEventListener('click',()=>{drums=[[],[],[]];rebuild();});
 byId('clearNotes').addEventListener('click',()=>{melody=Array(16).fill(null);bass=Array(16).fill(null);rebuild();});
